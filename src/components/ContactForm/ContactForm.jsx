@@ -1,33 +1,36 @@
-import { Component } from "react";
+import { useState } from "react";
 import css from './ContactForm.module.css';
 
-export class ContactForm extends Component {
+export const ContactForm = () => {
 
-    state = {
-        name: '',
-        number: '',
-    }
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
 
-    handleChange = event => {
+    // state = {
+    //     name: '',
+    //     number: '',
+    // }
+
+    const handleChange = event => {
         const { name, value } = event.currentTarget; 
-        this.setState({
+        setName({
             [name]: value,
         })
     }
 
-    handleSubmit = event => {
+    const handleSubmit = event => {
         event.preventDefault();
         this.props.onSubmit(this.state);
-        this.reset()
+        reset()
     }
 
-    reset = () => {
+    const reset = () => {
         this.setState({ name: '', number: ''})
     }
 
-    render () {
-        const { name, number } = this.state;
-        const { handleSubmit, handleChange } = this
+
+        // const { name, number } = this.state;
+        // const { handleSubmit, handleChange } = this
 
         return (
             <form className={css.formPhonebook} onSubmit={handleSubmit}>
@@ -64,4 +67,3 @@ export class ContactForm extends Component {
 
         );
     }
-}
