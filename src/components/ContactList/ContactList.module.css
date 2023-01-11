@@ -1,0 +1,25 @@
+.contactList {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+.contactItem {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    border-radius: 10px;
+    border: 1px solid rgb(116, 116, 116);
+    background-color: rgb(248, 247, 247);
+    box-shadow: 0 1px 5px rgb(0 0 0 / 35%);
+    cursor: pointer;
+    padding: 3px 10px;
+}
+
+.btn:hover,
+.btn:focus {
+    color: red;
+    border: 1px solid red;
+}
