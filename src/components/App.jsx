@@ -42,10 +42,10 @@ export class App extends Component {
   getVisibleContacts = () => {  
     const { filter, contacts } = this.state;
 
-    const normolizedFilter = filter.toLowerCase().trim();
+    const normalizedFilter = filter.toLowerCase().trim();
     return (
       contacts.filter(contact =>
-        contact.name.toLowerCase().includes(normolizedFilter)
+        contact.name.toLowerCase().includes(normalizedFilter)
       )
     )
   };
@@ -60,15 +60,16 @@ export class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
+    const { contacts } = this.state;
 
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts))
+    if (contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(contacts))
     }
   }
 
   render() {
     const visibleContacts = this.getVisibleContacts();
-    const { filter, contacts } = this.state;
+    const { filter } = this.state;
     const { addContact, changeFilter, deleteContact } = this;
 
     return (
@@ -93,7 +94,7 @@ export class App extends Component {
               onDelete={deleteContact}
             />
           </section>
-          <p>Total number of contacts in the phonebook: {contacts.length}</p>
+          <p>Total number of contacts in the phonebook: {visibleContacts.length}</p>
       </div>
     );
   }
