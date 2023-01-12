@@ -1,101 +1,62 @@
-import { nanoid } from 'nanoid';
-import { Component } from "react";
+import { nanoid } from "nanoid";
+import { useState, useEffect } from "react";
 import { ContactForm } from "./ContactForm/ContactForm";
 import { ContactList } from "./ContactList/ContactList";
 import { Filter } from "./Filter/Filter";
 import css from "./ContactForm/ContactForm.module.css";
 
-export class App extends Component {
+export const App = () => {
+  const [contacts, setContacts] = useState(
+    JSON.parse(localStorage.getItem("contacts")) ?? []
+  );
+  const [filter, setFilter] = useState("");
 
-  state = {
-    contacts: [],
-    filter: '',
-  };
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
-  addContact = ({ name, number }) => {
-    const { contacts } = this.state;
-
+  const addContact = ({ name, number }) => {
     const newContact = {
       name,
       number,
       id: nanoid(),
     };
 
-    contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase())
-      ? alert(`${name} is already on contacts`)
-      : this.setState(({ contacts }) => ({
-          contacts: [newContact, ...contacts],
-        }));
-
-  }
-
-  deleteContact = (contactId) => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
-    }))
-  }
-
-  changeFilter = event => {
-    this.setState({ filter: event.currentTarget.value });
-  };
-
-  getVisibleContacts = () => {  
-    const { filter, contacts } = this.state;
-
-    const normalizedFilter = filter.toLowerCase().trim();
-    return (
-      contacts.filter(contact =>
-        contact.name.toLowerCase().includes(normalizedFilter)
-      )
+    contacts.find(
+      (contact) => contact.name.toLowerCase() === name.toLowerCase()
     )
+      ? alert(`${name} is already on contacts`)
+      : setContacts((prewContacts) => [newContact, ...prewContacts]);
   };
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
+  const deleteContact = (contactId) => {
+    setContacts(contacts.filter((contact) => contact.id !== contactId));
+  };
 
-    if (parsedContacts) {
-      this.setState({ contacts: parsedContacts });
-    }
-  }
+  const changeFilter = (event) => {
+    setFilter(event.currentTarget.value);
+  };
 
-  componentDidUpdate(prevProps, prevState) {
-    const { contacts } = this.state;
+  const getVisibleContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase().trim())
+  );
 
-    if (contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(contacts))
-    }
-  }
+  return (
+    <div className={css.container}>
+      <section className={css.sectionPhonebook}>
+        <h2 className={css.sectionHeader}>Phonebook</h2>
+        <ContactForm onSubmit={addContact} />
+      </section>
 
-  render() {
-    const visibleContacts = this.getVisibleContacts();
-    const { filter } = this.state;
-    const { addContact, changeFilter, deleteContact } = this;
+      <Filter value={filter} onChange={changeFilter} />
 
-    return (
-        <div className={css.container}>
-
-          <section className={css.sectionPhonebook}>
-            <h2 className={css.sectionHeader}>Phonebook</h2>
-            <ContactForm 
-              onSubmit={addContact}
-            />
-          </section>
-
-          <Filter 
-            value={filter} 
-            onChange={changeFilter}
-          />
-
-          <section className={css.sectionContacts}>
-            <h2 className={css.sectionHeader}>Contacts</h2>
-            <ContactList
-              contacts={visibleContacts}
-              onDelete={deleteContact}
-            />
-          </section>
-          <p>Total number of contacts in the phonebook: {visibleContacts.length}</p>
-      </div>
-    );
-  }
+      <section className={css.sectionContacts}>
+        <h2 className={css.sectionHeader}>Contacts</h2>
+        <ContactList contacts={getVisibleContacts} onDelete={deleteContact} />
+      </section>
+      <p>
+        Total number of contacts in the phonebook: {getVisibleContacts.length}
+      </p>
+    </div>
+  );
 };
